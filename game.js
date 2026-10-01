@@ -5,12 +5,14 @@ const Game = {
         playerLevel: 0,
         playerCurrentHp: 100,
         exp: 0,
-        gold: 50,
-        potions: 2,
-        extraAtkBonus: 0,
+        gold: 80,
+        potions: 3,
+        equipment: [],
+        questProgress: { q1: 0, q2: 0 },
+        questClaimed: { q1: false, q2: false },
+        dexDiscovered: ['agumon', 'devimon'],
         isArena: false,
         arenaWave: 1,
-        achievements: [],
         isPlayerTurn: true,
         activeEnemy: null
     },
@@ -35,22 +37,22 @@ const Game = {
         } catch(e) {}
     },
 
-    saveGame() { localStorage.setItem('digimon_advanced_save', JSON.stringify(this.state)); },
+    saveGame() { localStorage.setItem('digimon_ultimate_save', JSON.stringify(this.state)); },
     loadGame() {
-        const saved = localStorage.getItem('digimon_advanced_save');
+        const saved = localStorage.getItem('digimon_ultimate_save');
         if (saved) { try { this.state = JSON.parse(saved); return true; } catch(e) {} }
         return false;
     },
     resetGameData() {
         if (confirm("Queres reiniciar todo o progresso do jogo?")) {
-            localStorage.removeItem('digimon_advanced_save');
+            localStorage.removeItem('digimon_ultimate_save');
             location.reload();
         }
     },
 
     switchScreen(screenId) {
         this.playSound('click');
-        ['screen-menu', 'screen-partner', 'screen-story', 'screen-shop', 'screen-battle', 'screen-achievements', 'screen-victory'].forEach(id => {
+        ['screen-menu', 'screen-partner', 'screen-story', 'screen-dojo', 'screen-shop', 'screen-equipment', 'screen-quests', 'screen-digidex', 'screen-battle', 'screen-victory'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.classList.add('hidden');
         });
@@ -87,12 +89,13 @@ const Game = {
         this.state.currentChapterIndex = 0;
         this.state.playerLevel = 0;
         this.state.exp = 0;
-        this.state.gold = 50;
-        this.state.potions = 2;
-        this.state.extraAtkBonus = 0;
+        this.state.gold = 80;
+        this.state.potions = 3;
+        this.state.equipment = [];
         this.state.isArena = false;
         const pObj = GAME_DATA.partners.find(p => p.id === id);
         this.state.playerCurrentHp = pObj.evos[0].hp;
+        if (!this.state.dexDiscovered.includes(id)) this.state.dexDiscovered.push(id);
         this.saveGame();
         this.loadChapterData();
         this.switchScreen('screen-story');
@@ -103,11 +106,25 @@ const Game = {
         return p.evos[this.state.playerLevel] || p.evos[0];
     },
 
+    getPassiveBonuses() {
+        let bonusAtk = 0, bonusDef = 0, bonusGold = 0;
+        this.state.equipment.forEach(eqId => {
+            const eq = GAME_DATA.equipmentList.find(e => e.id === eqId);
+            if (eq) {
+                if (eq.type === 'atk') bonusAtk += eq.val;
+                if (eq.type === 'def') bonusDef += eq.val;
+                if (eq.type === 'gold') bonusGold += eq.val;
+            }
+        });
+        return { bonusAtk, bonusDef, bonusGold };
+    },
+
     loadChapterData() {
         const chapter = GAME_DATA.chapters[this.state.currentChapterIndex];
         document.getElementById('chapter-tag').innerText = chapter.tag;
         document.getElementById('chapter-title').innerText = chapter.title;
         document.getElementById('chapter-desc').innerText = chapter.desc;
+        document.getElementById('weather-name').innerText = chapter.weather;
         document.getElementById('enemy-preview-name').innerText = chapter.enemy.name;
         this.updateStatusBar();
     },
@@ -117,7 +134,118 @@ const Game = {
         document.getElementById('player-status-bar').innerText = `Parceiro: ${evo.name} | Nv. ${this.state.playerLevel + 1} | 💰 ${this.state.gold}`;
     },
 
-    // Modo Arena / Sobrevivência
+    // Dojo de Treino (Minijogo de Reflexo)
+    dojoTimeout: null,
+    startDojo() {
+        this.switchScreen('screen-dojo');
+        const btn = document.getElementById('dojo-action-btn');
+        btn.innerText = "AGUARDE...";
+        btn.className = "w-full bg-slate-800 hover:bg-slate-700 font-bold py-6 rounded-xl text-sm border border-slate-700 cursor-pointer transition";
+        
+        const delay = 1500 + Math.random() * 2000;
+        this.dojoTimeout = setTimeout(() => {
+            btn.innerText = "CLICA AGORA!";
+            btn.className = "w-full bg-emerald-600 hover:bg-emerald-500 font-bold py-6 rounded-xl text-sm border border-emerald-500 cursor-pointer transition animate-pulse";
+            btn.dataset.ready = "true";
+        }, delay);
+    },
+
+    dojoClick() {
+        const btn = document.getElementById('dojo-action-btn');
+        if (btn.dataset.ready === "true") {
+            clearTimeout(this.dojoTimeout);
+            btn.dataset.ready = "false";
+            this.playSound('evolve');
+            this.state.exp += 40;
+            this.state.questProgress.q2++;
+            alert("Treino bem-sucedido! Ganhaste +40 EXP.");
+            this.saveGame();
+            this.init();
+        } else {
+            clearTimeout(this.dojoTimeout);
+            alert("Clicaste demasiado cedo! Tenta novamente.");
+            this.startDojo();
+        }
+    },
+
+    // Equipamentos Passivos
+    openEquipment() {
+        const container = document.getElementById('equipment-list-container');
+        container.innerHTML = '';
+        GAME_DATA.equipmentList.forEach(eq => {
+            const owned = this.state.equipment.includes(eq.id);
+            const div = document.createElement('div');
+            div.className = "bg-slate-900 border border-slate-800 p-3 rounded-xl flex items-center justify-between";
+            div.innerHTML = `<div><p class="font-bold text-xs text-amber-300">${eq.name}</p><p class="text-[9px] text-slate-400">${eq.desc} - ${eq.cost} Bits</p></div><button onclick="Game.buyEquipment('${eq.id}')" class="text-[10px] px-3 py-1.5 rounded-lg font-bold ${owned ? 'bg-slate-800 text-slate-500 cursor-default' : 'bg-amber-600 text-slate-950 cursor-pointer'}">${owned ? 'Adquirido' : 'Comprar'}</button>`;
+            container.appendChild(div);
+        });
+        this.switchScreen('screen-equipment');
+    },
+
+    buyEquipment(eqId) {
+        const eq = GAME_DATA.equipmentList.find(e => e.id === eqId);
+        if (this.state.equipment.includes(eqId)) return;
+        if (this.state.gold >= eq.cost) {
+            this.state.gold -= eq.cost;
+            this.state.equipment.push(eqId);
+            alert(`Equipamento ${eq.name} comprado com sucesso!`);
+            this.saveGame();
+            this.openEquipment();
+        } else {
+            alert("Bits insuficientes!");
+        }
+    },
+
+    // Missões Diárias
+    openQuests() {
+        const container = document.getElementById('quests-list-container');
+        container.innerHTML = '';
+        GAME_DATA.questsDef.forEach(q => {
+            const current = this.state.questProgress[q.id] || 0;
+            const claimed = this.state.questClaimed[q.id];
+            const completed = current >= q.target;
+            const div = document.createElement('div');
+            div.className = "bg-slate-900 border border-slate-800 p-3 rounded-xl flex items-center justify-between";
+            div.innerHTML = `<div><p class="font-bold text-xs text-purple-300">${q.name}</p><p class="text-[9px] text-slate-400">${q.desc} (${current}/${q.target})</p></div><button onclick="Game.claimQuest('${q.id}')" class="text-[10px] px-3 py-1.5 rounded-lg font-bold ${claimed ? 'bg-slate-800 text-slate-500' : completed ? 'bg-purple-600 text-white cursor-pointer' : 'bg-slate-800 text-slate-400'}">${claimed ? 'Resgatado' : completed ? 'Resgatar' : 'Em progresso'}</button>`;
+            container.appendChild(div);
+        });
+        this.switchScreen('screen-quests');
+    },
+
+    claimQuest(qId) {
+        const q = GAME_DATA.questsDef.find(x => x.id === qId);
+        const current = this.state.questProgress[qId] || 0;
+        if (current >= q.target && !this.state.questClaimed[qId]) {
+            this.state.questClaimed[qId] = true;
+            this.state.gold += q.rewardGold;
+            alert(`Recompensa resgatada: +${q.rewardGold} Bits!`);
+            this.saveGame();
+            this.openQuests();
+        }
+    },
+
+    // DigiDex
+    openDigiDex() {
+        const container = document.getElementById('digidex-list-container');
+        container.innerHTML = '';
+        const allCreatures = [
+            { id: 'agumon', name: 'Agumon', sprite: '🦖', type: 'Parceiro' },
+            { id: 'gabumon', name: 'Gabumon', sprite: '🐺', type: 'Parceiro' },
+            { id: 'biyomon', name: 'Biyomon', sprite: '🦅', type: 'Parceiro' },
+            { id: 'devimon', name: 'Devimon', sprite: '😈', type: 'Chefe' },
+            { id: 'etemon', name: 'Etemon', sprite: '🐵', type: 'Chefe' },
+            { id: 'myotismon', name: 'Myotismon', sprite: '🦇', type: 'Chefe' }
+        ];
+        allCreatures.forEach(c => {
+            const unlocked = this.state.dexDiscovered.includes(c.id);
+            const div = document.createElement('div');
+            div.className = "bg-slate-900 border border-slate-800 p-3 rounded-xl flex items-center space-x-3";
+            div.innerHTML = `<span class="text-2xl">${unlocked ? c.sprite : '❓'}</span><div><p class="font-bold text-xs text-cyan-300">${unlocked ? c.name : 'Desconhecido'}</p><p class="text-[9px] text-slate-400">Tipo: ${c.type}</p></div>`;
+            container.appendChild(div);
+        });
+        this.switchScreen('screen-digidex');
+    },
+
     startArena() {
         this.state.isArena = true;
         this.state.arenaWave = 1;
@@ -125,13 +253,13 @@ const Game = {
         this.state.playerCurrentHp = evo.hp;
         this.setupArenaEnemy();
         this.switchScreen('screen-battle');
-        this.logMessage(`Início da Onda ${this.state.arenaWave} na Arena de Batalha!`);
+        this.logMessage(`Início da Onda ${this.state.arenaWave} na Arena!`);
     },
 
     setupArenaEnemy() {
         const wave = this.state.arenaWave;
         this.state.activeEnemy = {
-            name: `Monstro Feral W${wave}`,
+            name: `Monstro W${wave}`,
             sprite: ['👾', '🐉', '🤖', '💀'][wave % 4],
             element: 'dark',
             hp: 90 + wave * 40,
@@ -150,6 +278,11 @@ const Game = {
         const evo = this.getCurrentPartnerObj();
         this.state.activeEnemy = { ...chapter.enemy, currentHp: chapter.enemy.hp };
         this.state.isPlayerTurn = true;
+
+        if (!this.state.dexDiscovered.includes(chapter.enemy.name.toLowerCase())) {
+            this.state.dexDiscovered.push(chapter.enemy.name.toLowerCase());
+        }
+
         document.getElementById('battle-player-name').innerText = evo.name;
         document.getElementById('player-sprite').innerText = evo.sprite;
         document.getElementById('enemy-name').innerText = this.state.activeEnemy.name;
@@ -164,13 +297,13 @@ const Game = {
     playerAttack(type) {
         if (!this.state.isPlayerTurn) return;
         const evo = this.getCurrentPartnerObj();
-        const totalAtk = evo.atk + this.state.extraAtkBonus;
+        const bonuses = this.getPassiveBonuses();
+        const totalAtk = evo.atk + bonuses.bonusAtk;
         let baseDmg = type === 'basic' ? totalAtk - this.state.activeEnemy.def : Math.floor(totalAtk * 1.5) - this.state.activeEnemy.def;
         
-        // Vantagem Elementar
         if (evo.element === 'fire' && this.state.activeEnemy.element === 'dark') {
             baseDmg = Math.floor(baseDmg * 1.3);
-            this.logMessage(`🔥 Vantagem elementar! Dano aumentado.`);
+            this.logMessage(`🔥 Vantagem elementar aplicada!`);
         }
 
         const dmg = Math.max(5, baseDmg + Math.floor(Math.random() * 5));
@@ -221,8 +354,10 @@ const Game = {
     enemyTurn() {
         const enemy = this.state.activeEnemy;
         const evo = this.getCurrentPartnerObj();
+        const bonuses = this.getPassiveBonuses();
+        const totalDef = evo.def + bonuses.bonusDef;
         this.playSound('attack');
-        const dmg = Math.max(3, enemy.atk - evo.def + Math.floor(Math.random() * 4));
+        const dmg = Math.max(3, enemy.atk - totalDef + Math.floor(Math.random() * 4));
         this.state.playerCurrentHp = Math.max(0, this.state.playerCurrentHp - dmg);
         this.logMessage(`${enemy.name} contra-atacou com ${dmg} de dano.`);
         this.updateBattleUI();
@@ -250,33 +385,24 @@ const Game = {
 
     handleVictory() {
         const enemy = this.state.activeEnemy;
+        const bonuses = this.getPassiveBonuses();
+        const earnedGold = (enemy.goldReward || 40) + bonuses.bonusGold;
+        
         this.state.exp += enemy.expReward || 50;
-        this.state.gold += enemy.goldReward || 40;
+        this.state.gold += earnedGold;
+        this.state.questProgress.q1++;
 
-        // Conquistas
-        if (!this.state.achievements.includes('first_win')) {
-            this.state.achievements.push('first_win');
-        }
-        if (this.state.gold >= 200 && !this.state.achievements.includes('rich')) {
-            this.state.achievements.push('rich');
-        }
-
-        this.logMessage(`Vitória! Ganhou ${enemy.expReward} EXP e ${enemy.goldReward} Bits.`);
+        this.logMessage(`Vitória! Ganhou ${enemy.expReward} EXP e ${earnedGold} Bits.`);
         this.saveGame();
 
         setTimeout(() => {
             if (this.state.isArena) {
                 this.state.arenaWave++;
-                if (this.state.arenaWave >= 4 && !this.state.achievements.includes('arena_master')) {
-                    this.state.achievements.push('arena_master');
-                }
-                alert(`Onda ${this.state.arenaWave - 1} vencida! Preparando seguinte.`);
+                alert(`Onda ${this.state.arenaWave - 1} vencida! A preparar seguinte.`);
                 this.setupArenaEnemy();
                 this.state.isPlayerTurn = true;
                 return;
             }
-
-            // Ir para a Loja entre capítulos
             document.getElementById('shop-gold').innerText = this.state.gold;
             this.switchScreen('screen-shop');
         }, 1200);
@@ -287,10 +413,6 @@ const Game = {
             this.state.gold -= 30;
             this.state.potions++;
             alert("Poção comprada!");
-        } else if (type === 'atk' && this.state.gold >= 50) {
-            this.state.gold -= 50;
-            this.state.extraAtkBonus += 5;
-            alert("Ataque aumentado permanentemente em +5!");
         } else {
             alert("Bits insuficientes!");
         }
@@ -307,19 +429,6 @@ const Game = {
         this.saveGame();
         this.loadChapterData();
         this.switchScreen('screen-story');
-    },
-
-    openAchievements() {
-        const list = document.getElementById('achievements-list');
-        list.innerHTML = '';
-        GAME_DATA.achievementsDef.forEach(ach => {
-            const unlocked = this.state.achievements.includes(ach.id);
-            const div = document.createElement('div');
-            div.className = `p-3 rounded-xl border ${unlocked ? 'bg-amber-950/40 border-amber-600 text-amber-200' : 'bg-slate-900 border-slate-800 text-slate-500'}`;
-            div.innerHTML = `<p class="font-bold text-xs">${ach.name} ${unlocked ? '✅' : '🔒'}</p><p class="text-[10px]">${ach.desc}</p>`;
-            list.appendChild(div);
-        });
-        this.switchScreen('screen-achievements');
     },
 
     logMessage(text) {

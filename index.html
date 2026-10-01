@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Digimon: Crônicas Digitais</title>
+    <title>Digimon: Crônicas Digitais Ultimate</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -15,12 +15,14 @@
 
     <header class="w-full text-center py-2 border-b border-slate-800 mb-2 flex justify-between items-center">
         <div>
-            <h1 class="pixel-font text-[10px] text-amber-400">DIGIMON ADVENTURE</h1>
-            <p class="text-[10px] text-slate-400 mt-1" id="player-status-bar">Parceiro: Agumon | Nv. 1</p>
+            <h1 class="pixel-font text-[9px] text-amber-400">DIGIMON ULTIMATE</h1>
+            <p class="text-[9px] text-slate-400 mt-0.5" id="player-status-bar">Parceiro: Agumon | Nv. 1</p>
         </div>
         <div class="flex space-x-1">
-            <button onclick="Game.openAchievements()" class="text-[9px] bg-amber-900/40 text-amber-300 border border-amber-800 px-2 py-1 rounded cursor-pointer">🏆</button>
-            <button onclick="Game.resetGameData()" class="text-[9px] bg-rose-900/40 text-rose-300 border border-rose-800 px-2 py-1 rounded cursor-pointer">🔄</button>
+            <button onclick="Game.openDigiDex()" class="text-[9px] bg-cyan-900/40 text-cyan-300 border border-cyan-800 px-2 py-1 rounded cursor-pointer" title="DigiDex">📖</button>
+            <button onclick="Game.openQuests()" class="text-[9px] bg-purple-900/40 text-purple-300 border border-purple-800 px-2 py-1 rounded cursor-pointer" title="Quests">📜</button>
+            <button onclick="Game.openEquipment()" class="text-[9px] bg-amber-900/40 text-amber-300 border border-amber-800 px-2 py-1 rounded cursor-pointer" title="Equipamentos">🛡️</button>
+            <button onclick="Game.resetGameData()" class="text-[9px] bg-rose-900/40 text-rose-300 border border-rose-800 px-2 py-1 rounded cursor-pointer" title="Reset">🔄</button>
         </div>
     </header>
 
@@ -29,8 +31,9 @@
         <!-- MENU -->
         <div id="screen-menu" class="w-full flex flex-col items-center space-y-3">
             <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full text-center shadow-xl space-y-3">
-                <h2 class="text-lg font-bold text-cyan-400">Salvar o Mundo Digital</h2>
+                <h2 class="text-base font-bold text-cyan-400">Mundo Digital em Perigo</h2>
                 <button onclick="Game.openPartnerSelection()" class="w-full bg-cyan-600 hover:bg-cyan-500 font-bold py-3 rounded-xl text-xs shadow-lg cursor-pointer">INICIAR JORNADA</button>
+                <button onclick="Game.startDojo()" class="w-full bg-blue-600 hover:bg-blue-500 font-bold py-3 rounded-xl text-xs shadow-lg cursor-pointer">🥋 DOJO DE TREINO</button>
                 <button onclick="Game.startArena()" class="w-full bg-purple-600 hover:bg-purple-500 font-bold py-3 rounded-xl text-xs shadow-lg cursor-pointer">⚔️ MODO ARENA</button>
             </div>
         </div>
@@ -47,11 +50,22 @@
                 <span id="chapter-tag" class="text-[9px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded font-bold">Capítulo 1</span>
                 <h3 id="chapter-title" class="text-sm font-bold mt-1 text-amber-300">Ilha File</h3>
                 <p id="chapter-desc" class="text-xs text-slate-300 mt-1">Descrição...</p>
+                <p class="text-[10px] text-cyan-400 mt-2">🌤️ Clima: <span id="weather-name">Calor Extremo</span></p>
             </div>
             <div class="bg-slate-900/60 border border-slate-800 p-3 rounded-xl text-center">
                 <p class="text-xs text-slate-400">Inimigo: <span id="enemy-preview-name" class="font-bold text-rose-400">Devimon</span></p>
             </div>
             <button onclick="Game.startBattle()" class="w-full bg-emerald-600 hover:bg-emerald-500 font-bold py-3 rounded-xl text-xs shadow-lg cursor-pointer">ENFRENTAR CHEFE</button>
+        </div>
+
+        <!-- DOJO DE TREINO (Minijogo de Reflexo) -->
+        <div id="screen-dojo" class="w-full hidden flex-col space-y-4 text-center">
+            <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full space-y-3">
+                <h3 class="text-sm font-bold text-blue-400">🥋 Dojo Digital - Treino de Foco</h3>
+                <p id="dojo-instruction" class="text-xs text-slate-300">Clica no botão assim que ele acender para ganhar EXP!</p>
+                <button id="dojo-action-btn" onclick="Game.dojoClick()" class="w-full bg-slate-800 hover:bg-slate-700 font-bold py-6 rounded-xl text-sm border border-slate-700 cursor-pointer transition">AGUARDE...</button>
+                <button onclick="Game.init()" class="w-full bg-slate-800/60 hover:bg-slate-800 py-2.5 rounded-xl text-xs font-bold cursor-pointer">Voltar ao Menu</button>
+            </div>
         </div>
 
         <!-- LOJA DE SUPRIMENTOS -->
@@ -60,9 +74,29 @@
                 <h3 class="text-sm font-bold text-amber-400">🛒 Loja Digital</h3>
                 <p class="text-xs text-slate-300">Bits disponíveis: <span id="shop-gold" class="font-bold text-amber-300">0</span></p>
                 <button onclick="Game.buyItem('potion')" class="w-full bg-purple-700 hover:bg-purple-600 font-bold py-2.5 rounded-xl text-xs cursor-pointer">Comprar Poção (+1) - 30 Bits</button>
-                <button onclick="Game.buyItem('atk')" class="w-full bg-blue-700 hover:bg-blue-600 font-bold py-2.5 rounded-xl text-xs cursor-pointer">Poção de Força (+5 ATK) - 50 Bits</button>
                 <button onclick="Game.leaveShop()" class="w-full bg-emerald-600 hover:bg-emerald-500 font-bold py-3 rounded-xl text-xs cursor-pointer">Continuar Viagem ➔</button>
             </div>
+        </div>
+
+        <!-- EQUIPAMENTOS -->
+        <div id="screen-equipment" class="w-full hidden flex-col space-y-3">
+            <h3 class="text-xs font-bold text-amber-400 text-center">🛡️ Loja de Equipamentos Passivos</h3>
+            <div id="equipment-list-container" class="space-y-2 w-full"></div>
+            <button onclick="Game.init()" class="w-full bg-slate-800 hover:bg-slate-700 py-3 rounded-xl text-xs font-bold cursor-pointer">Voltar</button>
+        </div>
+
+        <!-- MISSÕES DIÁRIAS (QUESTS) -->
+        <div id="screen-quests" class="w-full hidden flex-col space-y-3">
+            <h3 class="text-xs font-bold text-purple-400 text-center">📜 Missões Diárias</h3>
+            <div id="quests-list-container" class="space-y-2 w-full"></div>
+            <button onclick="Game.init()" class="w-full bg-slate-800 hover:bg-slate-700 py-3 rounded-xl text-xs font-bold cursor-pointer">Voltar</button>
+        </div>
+
+        <!-- DIGIDEX -->
+        <div id="screen-digidex" class="w-full hidden flex-col space-y-3">
+            <h3 class="text-xs font-bold text-cyan-400 text-center">📖 Enciclopédia DigiDex</h3>
+            <div id="digidex-list-container" class="space-y-2 w-full max-h-64 overflow-y-auto"></div>
+            <button onclick="Game.init()" class="w-full bg-slate-800 hover:bg-slate-700 py-3 rounded-xl text-xs font-bold cursor-pointer">Voltar</button>
         </div>
 
         <!-- BATALHA -->
@@ -84,7 +118,7 @@
                 <div class="text-right">
                     <span id="battle-player-name" class="text-xs font-bold text-cyan-400">Agumon</span>
                     <p id="player-hp-text" class="text-[9px] text-slate-400">HP: 100/100</p>
-                    <p id="player-exp-text" class="text-[9px] text-amber-400">EXP: 0/100</p>
+                    <p id="player-exp-text" class="text-[9px] text-amber-400">EXP: 0</p>
                     <div class="w-32 bg-slate-800 h-2 rounded-full mt-1 ml-auto overflow-hidden">
                         <div id="player-hp-bar" class="bg-cyan-500 h-full w-full transition-all"></div>
                     </div>
@@ -99,13 +133,6 @@
             </div>
         </div>
 
-        <!-- PAINEL DE CONQUISTAS -->
-        <div id="screen-achievements" class="w-full hidden flex-col space-y-3">
-            <h3 class="text-xs font-bold text-amber-400 text-center">🏆 Conquistas Desbloqueadas</h3>
-            <div id="achievements-list" class="space-y-2 w-full"></div>
-            <button onclick="Game.init()" class="w-full bg-slate-800 hover:bg-slate-700 py-3 rounded-xl text-xs font-bold cursor-pointer">Voltar</button>
-        </div>
-
         <!-- VITÓRIA -->
         <div id="screen-victory" class="w-full hidden flex-col items-center text-center space-y-3">
             <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full shadow-xl space-y-3">
@@ -117,7 +144,7 @@
 
     </main>
 
-    <footer class="w-full text-center text-[9px] text-slate-500 pt-2 border-t border-slate-900">Digimon Web MVP - 5 Advanced Features</footer>
+    <footer class="w-full text-center text-[9px] text-slate-500 pt-2 border-t border-slate-900">Digimon Ultimate - 10 Total Features</footer>
 
     <script src="data.js"></script>
     <script src="game.js"></script>

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Digimon Ultimate</string>
+    <string name="title_activity_main">Digimon Ultimate</string>
+    <string name="package_name">com.anderson.digimonultimate</string>
+    <string name="custom_url_scheme">com.anderson.digimonultimate</string>
+</resources>

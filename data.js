@@ -1,21 +1,16 @@
 const GAME_DATA = {
-    // Múltiplos parceiros iniciais para escolher
     partners: [
         {
-            id: "agumon",
-            name: "Agumon",
-            sprite: "🦖",
+            id: "agumon", name: "Agumon", sprite: "🦖", element: "fire",
             evos: [
                 { level: 1, name: "Agumon", sprite: "🦖", hp: 100, atk: 22, def: 5, specialName: "Bafo de Pimenta" },
                 { level: 2, name: "Greymon", sprite: "🦕", hp: 150, atk: 35, def: 10, specialName: "Chama Nova" },
                 { level: 3, name: "MetalGreymon", sprite: "🦾", hp: 220, atk: 52, def: 16, specialName: "Giga Blaster" },
-                { level: 4, name: "WarGreymon", sprite: "🛡️", hp: 300, atk: 75, def: 25, specialName: "Força de Gaia" }
+                { level: 4, name: "WarGreymon", sprite: "🛡️️", hp: 300, atk: 75, def: 25, specialName: "Força de Gaia" }
             ]
         },
         {
-            id: "gabumon",
-            name: "Gabumon",
-            sprite: "🐺",
+            id: "gabumon", name: "Gabumon", sprite: "🐺", element: "ice",
             evos: [
                 { level: 1, name: "Gabumon", sprite: "🐺", hp: 95, atk: 24, def: 4, specialName: "Fogo Azul" },
                 { level: 2, name: "Garurumon", sprite: "🐕", hp: 140, atk: 38, def: 9, specialName: "Uivo Uivar" },
@@ -24,9 +19,7 @@ const GAME_DATA = {
             ]
         },
         {
-            id: "biyomon",
-            name: "Biyomon",
-            sprite: "🦅",
+            id: "biyomon", name: "Biyomon", sprite: "🦅", element: "wind",
             evos: [
                 { level: 1, name: "Biyomon", sprite: "🦅", hp: 90, atk: 25, def: 3, specialName: "Espiral Mágica" },
                 { level: 2, name: "Birdramon", sprite: "🔥", hp: 130, atk: 40, def: 8, specialName: "Meteoro de Fogo" },
@@ -35,57 +28,18 @@ const GAME_DATA = {
             ]
         }
     ],
-
-    // Capítulos da 1ª Temporada e seus Chefes
     chapters: [
-        {
-            id: 1,
-            title: "Ilha File",
-            tag: "Capítulo 1",
-            desc: "Você chegou à Ilha File. O primeiro grande obstáculo corrompido pelas Engrenagens Negras é o sádico mensageiro das trevas.",
-            enemy: { name: "Devimon", sprite: "😈", hp: 120, maxHp: 120, atk: 18, def: 4 }
-        },
-        {
-            id: 2,
-            title: "Continente Server",
-            tag: "Capítulo 2",
-            desc: "Cruzando o oceano, o Continente Server apresenta ameaças implacáveis: o popstar tirano.",
-            enemy: { name: "Etemon", sprite: "🐵", hp: 200, maxHp: 200, atk: 28, def: 8 }
-        },
-        {
-            id: 3,
-            title: "Noite em Server",
-            tag: "Capítulo 3",
-            desc: "A verdadeira face do terror surge sob o comando do lorde vampiro.",
-            enemy: { name: "Myotismon", sprite: "🦇", hp: 280, maxHp: 280, atk: 38, def: 12 }
-        },
-        {
-            id: 4,
-            title: "Mundo Digital - Mestres das Trevas",
-            tag: "Capítulo 4",
-            desc: "Os Mestres das Trevas reescreveram o Mundo Digital. Enfrente o governante das profundezas.",
-            enemy: { name: "MetalSeadramon", sprite: "🐉", hp: 380, maxHp: 380, atk: 48, def: 18 }
-        },
-        {
-            id: 5,
-            title: "A Fortaleza Mecânica",
-            tag: "Capítulo 5",
-            desc: "A cidade mecânica do exército de máquinas implacáveis.",
-            enemy: { name: "Machinedramon", sprite: "🤖", hp: 480, maxHp: 480, atk: 58, def: 22 }
-        },
-        {
-            id: 6,
-            title: "O Mágico das Trevas",
-            tag: "Capítulo 6",
-            desc: "O labirinto do palhaço sombrio que desafia a coragem dos escolhidos.",
-            enemy: { name: "Piedmon", sprite: "🃏", hp: 580, maxHp: 580, atk: 68, def: 28 }
-        },
-        {
-            id: 7,
-            title: "Capítulo Final: O Caos",
-            tag: "Fim do Jogo",
-            desc: "A entidade primordial do sofrimento de todos os Digimon se manifestou.",
-            enemy: { name: "Apocalymon", sprite: "🌌", hp: 750, maxHp: 750, atk: 85, def: 35 }
-        }
+        { id: 1, title: "Ilha File", tag: "Capítulo 1", desc: "Devimon corrompe a ilha.", enemy: { name: "Devimon", sprite: "😈", element: "dark", hp: 120, maxHp: 120, atk: 18, def: 4, expReward: 50, goldReward: 40 } },
+        { id: 2, title: "Continente Server", tag: "Capítulo 2", desc: "O popstar tirano.", enemy: { name: "Etemon", sprite: "🐵", element: "dark", hp: 200, maxHp: 200, atk: 28, def: 8, expReward: 90, goldReward: 75 } },
+        { id: 3, title: "Noite em Server", tag: "Capítulo 3", desc: "O lorde vampiro.", enemy: { name: "Myotismon", sprite: "🦇", element: "dark", hp: 280, maxHp: 280, atk: 38, def: 12, expReward: 140, goldReward: 110 } },
+        { id: 4, title: "Mestres das Trevas", tag: "Capítulo 4", desc: "Governante das profundezas.", enemy: { name: "MetalSeadramon", sprite: "🐉", element: "dark", hp: 380, maxHp: 380, atk: 48, def: 18, expReward: 200, goldReward: 160 } },
+        { id: 5, title: "Fortaleza Mecânica", tag: "Capítulo 5", desc: "Exército de máquinas.", enemy: { name: "Machinedramon", sprite: "🤖", element: "dark", hp: 480, maxHp: 480, atk: 58, def: 22, expReward: 280, goldReward: 220 } },
+        { id: 6, title: "Mágico das Trevas", tag: "Capítulo 6", desc: "Palhaço sombrio.", enemy: { name: "Piedmon", sprite: "🃏", element: "dark", hp: 580, maxHp: 580, atk: 68, def: 28, expReward: 380, goldReward: 300 } },
+        { id: 7, title: "Capítulo Final: O Caos", tag: "Fim do Jogo", desc: "A entidade primordial.", enemy: { name: "Apocalymon", sprite: "🌌", element: "dark", hp: 750, maxHp: 750, atk: 85, def: 35, expReward: 550, goldReward: 450 } }
+    ],
+    achievementsDef: [
+        { id: 'first_win', name: 'Primeiro Sangue', desc: 'Derrota o primeiro chefe.' },
+        { id: 'rich', name: 'Rico em Bits', desc: 'Acumula 200 de ouro.' },
+        { id: 'arena_master', name: 'Mestre da Arena', desc: 'Vence 3 vagas na Arena.' }
     ]
 };

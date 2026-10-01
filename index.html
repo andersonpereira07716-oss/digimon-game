@@ -23,9 +23,12 @@
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between items-center p-4 max-w-md mx-auto relative overflow-x-hidden">
 
     <!-- CABEÇALHO GLOBAL -->
-    <header class="w-full text-center py-2 border-b border-slate-800 mb-4">
-        <h1 class="pixel-font text-xs text-amber-400 tracking-wider">DIGIMON ADVENTURE</h1>
-        <p class="text-xs text-slate-400 mt-1" id="player-status-bar">Parceiro: Agumon | Nível: 1</p>
+    <header class="w-full text-center py-2 border-b border-slate-800 mb-4 flex justify-between items-center">
+        <div>
+            <h1 class="pixel-font text-[10px] text-amber-400 tracking-wider">DIGIMON ADVENTURE</h1>
+            <p class="text-[10px] text-slate-400 mt-1" id="player-status-bar">Parceiro: Agumon | Nv. 1</p>
+        </div>
+        <button onclick="Game.resetGameData()" class="text-[9px] bg-rose-900/40 text-rose-300 border border-rose-800 px-2 py-1 rounded cursor-pointer hover:bg-rose-900">Reiniciar</button>
     </header>
 
     <!-- CONTAINER PRINCIPAL DE ESTADOS -->
@@ -35,10 +38,18 @@
         <div id="screen-menu" class="w-full flex flex-col items-center space-y-4">
             <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl w-full text-center shadow-xl">
                 <h2 class="text-xl font-bold mb-2 text-cyan-400">Salvar o Mundo Digital</h2>
-                <p class="text-xs text-slate-400 mb-6 leading-relaxed">Enfrente as forças das trevas desde a Ilha File até o Apocalymon!</p>
-                <button onclick="Game.startAdventure()" class="w-full bg-cyan-600 hover:bg-cyan-500 active:scale-95 transition font-bold py-4 rounded-xl text-sm shadow-lg cursor-pointer">
-                    INICIAR JORNADA
+                <p class="text-xs text-slate-400 mb-6 leading-relaxed">Escolha o seu parceiro e enfrente as forças das trevas!</p>
+                <button onclick="Game.openPartnerSelection()" class="w-full bg-cyan-600 hover:bg-cyan-500 active:scale-95 transition font-bold py-4 rounded-xl text-sm shadow-lg cursor-pointer">
+                    NOVO JOGO / CONTINUAR
                 </button>
+            </div>
+        </div>
+
+        <!-- TELA 1.5: ESCOLHA DE PARCEIRO -->
+        <div id="screen-partner" class="w-full hidden flex-col space-y-3">
+            <h3 class="text-sm font-bold text-cyan-400 text-center mb-2">Escolha seu Digimon Inicial:</h3>
+            <div id="partner-list-container" class="space-y-2 w-full">
+                <!-- Gerado dinamicamente via JS -->
             </div>
         </div>
 
@@ -47,7 +58,7 @@
             <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full shadow-lg">
                 <span id="chapter-tag" class="text-[10px] uppercase bg-amber-500/20 text-amber-400 px-2 py-1 rounded font-bold">Capítulo 1</span>
                 <h3 id="chapter-title" class="text-base font-bold mt-2 text-amber-300">Ilha File</h3>
-                <p id="chapter-desc" class="text-xs text-slate-300 mt-2 leading-relaxed">Você e seus amigos chegaram à Ilha File. Contudo, o Digimon corrompido pelas Engrenagens Negras está à solta!</p>
+                <p id="chapter-desc" class="text-xs text-slate-300 mt-2 leading-relaxed">Descrição da fase...</p>
             </div>
             <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-xl text-center">
                 <p class="text-xs text-slate-400 mb-1">Inimigo Atual:</p>
@@ -59,9 +70,9 @@
         </div>
 
         <!-- TELA 3: BATALHA POR TURNOS -->
-        <div id="screen-battle" class="w-full hidden flex-col justify-between h-full space-y-4">
+        <div id="screen-battle" class="w-full hidden flex-col justify-between h-full space-y-3">
             <!-- Painel do Inimigo -->
-            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center justify-between">
+            <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl flex items-center justify-between">
                 <div>
                     <span id="enemy-name" class="text-sm font-bold text-rose-400">Devimon</span>
                     <div class="w-32 bg-slate-800 h-2.5 rounded-full mt-2 overflow-hidden">
@@ -77,7 +88,7 @@
             </div>
 
             <!-- Painel do Jogador -->
-            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center justify-between">
+            <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl flex items-center justify-between">
                 <div id="player-sprite" class="text-3xl">🦖</div>
                 <div class="text-right">
                     <span id="battle-player-name" class="text-sm font-bold text-cyan-400">Agumon</span>
@@ -88,19 +99,19 @@
                 </div>
             </div>
 
-            <!-- Ações de Batalha -->
-            <div class="grid grid-cols-2 gap-2 pb-2">
-                <button onclick="Game.playerAttack('basic')" class="bg-slate-800 hover:bg-slate-700 active:scale-95 py-3 px-4 rounded-xl text-xs font-bold border border-slate-700 cursor-pointer">
+            <!-- Ações de Batalha (Incluindo Poção e Evolução) -->
+            <div class="grid grid-cols-2 gap-2 pb-1">
+                <button onclick="Game.playerAttack('basic')" class="bg-slate-800 hover:bg-slate-700 active:scale-95 py-2.5 px-3 rounded-xl text-xs font-bold border border-slate-700 cursor-pointer">
                     Ataque Físico
                 </button>
-                <button onclick="Game.playerAttack('special')" class="bg-cyan-900/60 hover:bg-cyan-900 active:scale-95 py-3 px-4 rounded-xl text-xs font-bold border border-cyan-800 text-cyan-300 cursor-pointer">
+                <button onclick="Game.playerAttack('special')" class="bg-cyan-900/60 hover:bg-cyan-900 active:scale-95 py-2.5 px-3 rounded-xl text-xs font-bold border border-cyan-800 text-cyan-300 cursor-pointer">
                     Especial
                 </button>
-                <button onclick="Game.playerEvolve()" id="btn-evolve" class="bg-amber-900/60 hover:bg-amber-900 active:scale-95 py-3 px-4 rounded-xl text-xs font-bold border border-amber-800 text-amber-300 cursor-pointer">
-                    Digievoluir ⚡
+                <button onclick="Game.usePotion()" id="btn-potion" class="bg-purple-900/60 hover:bg-purple-900 active:scale-95 py-2.5 px-3 rounded-xl text-xs font-bold border border-purple-800 text-purple-300 cursor-pointer">
+                    🧪 Poção (<span id="potion-count">2</span>)
                 </button>
-                <button onclick="Game.playerDefend()" class="bg-slate-800 hover:bg-slate-700 active:scale-95 py-3 px-4 rounded-xl text-xs font-bold border border-slate-700 cursor-pointer">
-                    Defender 🛡️
+                <button onclick="Game.playerEvolve()" id="btn-evolve" class="bg-amber-900/60 hover:bg-amber-900 active:scale-95 py-2.5 px-3 rounded-xl text-xs font-bold border border-amber-800 text-amber-300 cursor-pointer">
+                    Digievoluir ⚡
                 </button>
             </div>
         </div>
@@ -109,7 +120,7 @@
         <div id="screen-victory" class="w-full hidden flex-col items-center text-center space-y-4">
             <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl w-full shadow-xl">
                 <h2 id="victory-title" class="text-lg font-bold text-amber-400 mb-2">Capítulo Concluído!</h2>
-                <p id="victory-desc" class="text-xs text-slate-300 mb-6">O chefe foi derrotado e o Mundo Digital está um passo mais seguro.</p>
+                <p id="victory-desc" class="text-xs text-slate-300 mb-6">O chefe foi derrotado.</p>
                 <button onclick="Game.nextChapter()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-4 rounded-xl text-sm shadow-lg cursor-pointer">
                     CONTINUAR JORNADA
                 </button>
@@ -120,10 +131,10 @@
 
     <!-- RODAPÉ -->
     <footer class="w-full text-center text-[10px] text-slate-500 pt-2 border-t border-slate-900">
-        Digimon Web MVP - Vanilla JS & Tailwind
+        Digimon Web MVP - Full Features
     </footer>
 
-    <!-- IMPORTAÇÃO DOS SCRIPTS DA ARQUITETURA -->
+    <!-- IMPORTAÇÃO DOS SCRIPTS -->
     <script src="data.js"></script>
     <script src="game.js"></script>
 </body>

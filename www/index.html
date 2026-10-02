@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digimon Ultimate</title>
+    <title>Digimon Ultimate - Expanded</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
-        body { background-color: #0b0f1a; color: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 100vh; padding: 8px; }
-        header { text-align: center; background: #1e293b; width: 100%; padding: 8px; border-radius: 6px; border: 2px solid #3b82f6; font-size: 14px; display: flex; align-items: center; justify-content: space-between; }
-        .digimon-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #fbbf24; }
-        .status-panel { display: flex; justify-content: space-between; width: 100%; background: #1e1b4b; padding: 8px; border-radius: 6px; border: 1px solid #60a5fa; font-size: 12px; }
-        .game-screen { width: 100%; flex-grow: 1; margin: 6px 0; background: #090d16; border: 2px solid #2563eb; border-radius: 6px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; }
-        .location-title { color: #fbbf24; font-weight: bold; font-size: 15px; margin-bottom: 4px; }
-        .log-box { background: #020617; border: 1px solid #1e293b; padding: 8px; height: 110px; overflow-y: auto; font-size: 12px; color: #38bdf8; border-radius: 4px; }
-        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: 100%; margin-bottom: 4px; }
-        button { background: #2563eb; color: white; border: none; padding: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px; text-transform: uppercase; }
+        body { background-color: #0b0f1a; color: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 100vh; padding: 6px; }
+        header { text-align: center; background: #1e293b; width: 100%; padding: 6px; border-radius: 6px; border: 2px solid #3b82f6; font-size: 13px; display: flex; align-items: center; justify-content: space-between; }
+        .digimon-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #fbbf24; }
+        .status-panel { display: flex; justify-content: space-between; width: 100%; background: #1e1b4b; padding: 6px; border-radius: 6px; border: 1px solid #60a5fa; font-size: 11px; }
+        .game-screen { width: 100%; flex-grow: 1; margin: 4px 0; background: #090d16; border: 2px solid #2563eb; border-radius: 6px; padding: 8px; display: flex; flex-direction: column; justify-content: space-between; }
+        .location-title { color: #fbbf24; font-weight: bold; font-size: 14px; margin-bottom: 2px; }
+        .log-box { background: #020617; border: 1px solid #1e293b; padding: 6px; height: 95px; overflow-y: auto; font-size: 11px; color: #38bdf8; border-radius: 4px; }
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; width: 100%; margin-bottom: 4px; }
+        button { background: #2563eb; color: white; border: none; padding: 8px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 11px; text-transform: uppercase; }
         button:active { background: #1d4ed8; }
-        .action-buttons { display: flex; gap: 5px; width: 100%; flex-wrap: wrap; justify-content: center; }
-        .action-buttons button { background: #d97706; flex: 1; min-width: 45%; padding: 8px; font-size: 11px; }
+        .action-buttons { display: flex; gap: 4px; width: 100%; flex-wrap: wrap; justify-content: center; }
+        .action-buttons button { flex: 1; min-width: 30%; padding: 6px; font-size: 10px; }
     </style>
 </head>
 <body>
@@ -25,14 +25,14 @@
     <header>
         <div style="text-align: left;">
             <strong style="color: #fbbf24;">DIGIMON ULTIMATE</strong><br>
-            <span style="font-size: 11px;" id="headerInfo">Parceiro: Agumon | Nv. 1</span>
+            <span style="font-size: 10px;" id="headerInfo">Parceiro: Agumon | Nv. 1</span>
         </div>
         <img src="https://wikimon.net/images/thumb/7/73/Agumon.jpg/250px-Agumon.jpg" alt="Agumon" class="digimon-avatar" id="digiAvatar">
     </header>
 
     <div class="status-panel" id="statusPanel">
         <div>
-            <strong id="digiName">Agumon</strong> (<span id="digiStage">Rookie</span>)<br>
+            <strong id="digiName">Agumon</strong> (<span id="digiStage">Rookie</span>) - El: <span id="digiElem">Fogo</span><br>
             HP: <span id="digiHp">100</span>/<span id="digiMaxHp">100</span> | ATK: <span id="digiAtk">25</span>
         </div>
         <div>
@@ -44,20 +44,22 @@
     <div class="game-screen">
         <div>
             <div class="location-title" id="locName">Central Park</div>
-            <p id="locDesc" style="font-size: 12px; color: #94a3b8; margin-bottom: 6px;">Zona segura com Terminal, Loja e Quests.</p>
+            <p id="locDesc" style="font-size: 11px; color: #94a3b8; margin-bottom: 4px;">Zona segura com Terminal, Loja, Coliseu e Mina de Dados.</p>
         </div>
         <div class="log-box" id="gameLog">
-            [Sistema] Bem-vindo ao Digimon Ultimate com sprites oficiais! Escolhe um caminho para começar.
+            [Sistema] Versão Expandida com Elementos, Coliseu, Ultimates, Mineração e Haptics ativa!
         </div>
     </div>
 
     <div style="width: 100%;">
         <div class="controls" id="navigationControls"></div>
         <div class="action-buttons">
-            <button onclick="usePotion()">Usar Poção</button>
+            <button onclick="usePotion()">Poção</button>
             <button onclick="openShop()" style="background: #059669;">Loja</button>
             <button onclick="openQuestBoard()" style="background: #7c3aed;">Quests</button>
-            <button onclick="useCard()" style="background: #db2777;">Usar Carta</button>
+            <button onclick="enterColosseum()" style="background: #dc2626;">Coliseu</button>
+            <button onclick="mineData()" style="background: #ca8a04;">Mineração</button>
+            <button onclick="useCard()" style="background: #db2777;">Carta</button>
             <button onclick="restAtTerminal()" style="background: #10b981; min-width: 100%;">Curar no Terminal</button>
         </div>
     </div>
@@ -70,6 +72,7 @@
             digimon: {
                 name: "Agumon",
                 stage: "Rookie",
+                element: "Fogo", // Fogo, Planta, Água, Elétrico
                 level: 5,
                 hp: 100,
                 maxHp: 100,
@@ -85,39 +88,39 @@
             locations: {
                 "Central Park": {
                     name: "Central Park (Cidade Inicial)",
-                    description: "Zona segura com o Terminal de Servidor, Loja e Quests.",
+                    description: "Zona segura com Terminal, Loja, Coliseu e Mina.",
                     connections: ["South Sector Outskirts", "Digimon Cemetery"],
                     hasWildBattles: false
                 },
                 "South Sector Outskirts": {
                     name: "Arredores do Sector Sul",
-                    description: "Planícies verdes com Goburimons e Kunemons selvagens.",
+                    description: "Planícies verdes com monstros selvagens.",
                     connections: ["Central Park", "Ether Jungle"],
                     hasWildBattles: true,
                     wildMonsters: [
-                        { name: "Goburimon", hp: 60, atk: 18, expReward: 40 },
-                        { name: "Kunemon", hp: 50, atk: 15, expReward: 35 }
+                        { name: "Goburimon", element: "Planta", hp: 60, atk: 18, expReward: 40 },
+                        { name: "Kunemon", element: "Planta", hp: 50, atk: 15, expReward: 35 }
                     ],
                     encounterRate: 0.6
                 },
                 "Ether Jungle": {
                     name: "Selva Ether",
-                    description: "Floresta densa com Digimons selvagens.",
+                    description: "Floresta densa com perigos elementares.",
                     connections: ["South Sector Outskirts"],
                     hasWildBattles: true,
                     wildMonsters: [
-                        { name: "Palmon", hp: 80, atk: 20, expReward: 55 },
-                        { name: "Tentomon", hp: 85, atk: 22, expReward: 60 }
+                        { name: "Palmon", element: "Planta", hp: 80, atk: 20, expReward: 55 },
+                        { name: "Tentomon", element: "Elétrico", hp: 85, atk: 22, expReward: 60 }
                     ],
                     encounterRate: 0.7
                 },
                 "Digimon Cemetery": {
                     name: "Cemitério de Digimons",
-                    description: "Ruínas antigas com Bakemons corrompidos.",
+                    description: "Ruínas antigas com dados corrompidos.",
                     connections: ["Central Park"],
                     hasWildBattles: true,
                     wildMonsters: [
-                        { name: "Bakemon", hp: 110, atk: 28, expReward: 80 }
+                        { name: "Bakemon", element: "Água", hp: 110, atk: 28, expReward: 80 }
                     ],
                     encounterRate: 0.7
                 }
@@ -137,6 +140,12 @@
             }
         };
 
+        function triggerVibration(pattern) {
+            if (navigator.vibrate) {
+                navigator.vibrate(pattern);
+            }
+        }
+
         function logMessage(msg) {
             const logBox = document.getElementById("gameLog");
             logBox.innerHTML += `<br>${msg}`;
@@ -147,6 +156,7 @@
             const d = playerGame.digimon;
             document.getElementById("digiName").innerText = d.name;
             document.getElementById("digiStage").innerText = d.stage;
+            document.getElementById("digiElem").innerText = d.element;
             document.getElementById("headerInfo").innerText = `Parceiro: ${d.name} | Nv. ${d.level}`;
             document.getElementById("digiHp").innerText = d.hp;
             document.getElementById("digiMaxHp").innerText = d.maxHp;
@@ -176,9 +186,75 @@
             });
         }
 
+        // Funcionalidade 1: Sistema de Elementos e Vantagens
+        function calculateDamage(attackerElem, defenderElem, baseAtk) {
+            let multiplier = 1.0;
+            // Fogo > Planta > Elétrico > Água > Fogo
+            if (attackerElem === "Fogo" && defenderElem === "Planta") multiplier = 1.4;
+            else if (attackerElem === "Planta" && defenderElem === "Elétrico") multiplier = 1.4;
+            else if (attackerElem === "Elétrico" && defenderElem === "Água") multiplier = 1.4;
+            else if (attackerElem === "Água" && defenderElem === "Fogo") multiplier = 1.4;
+            
+            return Math.floor(baseAtk * multiplier);
+        }
+
+        // Funcionalidade 2: Modo Coliseu / Arena (Torneio)
+        function enterColosseum() {
+            if (gameWorld.currentLocation !== "Central Park") {
+                logMessage("❌ O Coliseu fica localizado no Central Park!");
+                return;
+            }
+            logMessage("🏟️ Entraste no Coliseu Digital! A enfrentar o Campeão do Torneio...");
+            triggerVibration(100);
+
+            let eliteBoss = { name: "MetalGreymon (Elite)", element: "Fogo", hp: 250, atk: 45, expReward: 200 };
+            let d = playerGame.digimon;
+
+            while (d.hp > 0 && eliteBoss.hp > 0) {
+                let pDmg = calculateDamage(d.element, eliteBoss.element, d.atk);
+                eliteBoss.hp -= pDmg;
+                if (eliteBoss.hp <= 0) break;
+
+                let eDmg = calculateDamage(eliteBoss.element, d.element, eliteBoss.atk);
+                d.hp -= eDmg;
+            }
+
+            if (d.hp > 0) {
+                logMessage("🏆 VENCESTE O COLISEU! Glória eterna e 500 Bits ganhos!");
+                playerGame.bits += 500;
+                playerGame.inventory.cards += 2;
+                gainExp(eliteBoss.expReward);
+                triggerVibration([50, 100, 50]);
+            } else {
+                d.hp = 1;
+                logMessage("💀 Foste aniquilado no Coliseu por falta de poder...");
+            }
+            updateUI();
+        }
+
+        // Funcionalidade 4: Mineração de Dados
+        function mineData() {
+            if (gameWorld.currentLocation !== "Central Park") {
+                logMessage("❌ A Mina de Dados só está acessível no Central Park!");
+                return;
+            }
+            let roll = Math.random();
+            if (roll < 0.5) {
+                let foundBits = 120;
+                playerGame.bits += foundBits;
+                logMessage(`⛏️ Mineração bem-sucedida! Extraíste ${foundBits} Bits de dados.`);
+            } else if (roll < 0.8) {
+                playerGame.inventory.potions++;
+                logMessage(`⛏️ Encontraste uma Poção em estado bruto na Mina!`);
+            } else {
+                logMessage(`⛏️ Os dados da mina colapsaram... Nada encontrado.`);
+            }
+            updateUI();
+        }
+
         function openShop() {
             if (gameWorld.currentLocation !== "Central Park") {
-                logMessage("❌ Só podes aceder à Loja no Central Park!");
+                logMessage("❌ A Loja só funciona no Central Park!");
                 return;
             }
             if (playerGame.bits >= 150) {
@@ -187,29 +263,27 @@
                 logMessage("🛍️ Compraste 1 Poção por 150 Bits!");
                 updateUI();
             } else {
-                logMessage("❌ Bits insuficientes para comprar poções (Custo: 150 Bits).");
+                logMessage("❌ Bits insuficientes.");
             }
         }
 
         function useCard() {
             if (playerGame.inventory.cards > 0) {
                 playerGame.inventory.cards--;
-                playerGame.digimon.atk += 10;
-                logMessage("🎴 Usaste a Carta de Suporte! O Ataque aumentou em +10.");
+                playerGame.digimon.atk += 12;
+                logMessage("🎴 Carta ativada! ATK +12 permanente.");
+                triggerVibration(80);
                 updateUI();
             } else {
-                logMessage("❌ Não tens cartas de suporte! Ganhas algumas ao derrotar monstros.");
+                logMessage("❌ Sem cartas de suporte.");
             }
         }
 
         function openQuestBoard() {
-            if (gameWorld.currentLocation !== "Central Park") {
-                logMessage("❌ O balcão de Quests fica no Central Park!");
-                return;
-            }
+            if (gameWorld.currentLocation !== "Central Park") return;
             if (!playerGame.quest.active) {
-                playerGame.quest = { active: "Goburimon", target: 2, progress: 0, reward: 250, description: "Derrotar 2 Goburimon." };
-                logMessage(`📜 Nova Quest Aceite: ${playerGame.quest.description}`);
+                playerGame.quest = { active: "Goburimon", target: 2, progress: 0, reward: 300, description: "Derrotar 2 Goburimon." };
+                logMessage(`📜 Quest Aceite: ${playerGame.quest.description}`);
             } else {
                 logMessage(`📜 Quest Ativa: ${playerGame.quest.description} (${playerGame.quest.progress}/${playerGame.quest.target})`);
             }
@@ -218,39 +292,40 @@
         function checkQuestProgress(monsterName) {
             if (playerGame.quest.active === monsterName) {
                 playerGame.quest.progress++;
-                logMessage(`🎯 Progresso da Quest: ${playerGame.quest.progress}/${playerGame.quest.target}`);
                 if (playerGame.quest.progress >= playerGame.quest.target) {
                     playerGame.bits += playerGame.quest.reward;
-                    logMessage(`🏆 Quest Concluída! Recebeste ${playerGame.quest.reward} Bits!`);
+                    logMessage(`🏆 Quest Concluída! +${playerGame.quest.reward} Bits.`);
                     playerGame.quest.active = null;
                 }
             }
         }
 
         function triggerWildBattle(wild) {
-            logMessage(`⚠️ Um ${wild.name} selvagem apareceu!`);
+            logMessage(`⚠️ ${wild.name} (${wild.element}) selvagem atacou!`);
+            triggerVibration(50);
             let d = playerGame.digimon;
 
             while (d.hp > 0 && wild.hp > 0) {
-                wild.hp -= d.atk;
+                let pDmg = calculateDamage(d.element, wild.element, d.atk);
+                wild.hp -= pDmg;
                 if (wild.hp <= 0) break;
-                d.hp -= wild.atk;
+
+                let eDmg = calculateDamage(wild.element, d.element, wild.atk);
+                d.hp -= eDmg;
             }
 
             if (d.hp > 0) {
-                logMessage(`🏆 Vitória contra o ${wild.name}!`);
-                playerGame.bits += 50;
+                logMessage(`🏆 Vitória contra ${wild.name}!`);
+                playerGame.bits += 40;
                 checkQuestProgress(wild.name);
-                
                 if (Math.random() < 0.4) {
                     playerGame.inventory.cards++;
                     logMessage(`🎴 Encontraste uma Digi-Carta rara!`);
                 }
-
                 gainExp(wild.expReward);
             } else {
                 d.hp = 1;
-                logMessage(`💀 O teu Digimon desmaiou! Recuaste para o Central Park.`);
+                logMessage(`💀 Derrotado! Recuaste para o Central Park.`);
                 gameWorld.currentLocation = "Central Park";
             }
             updateUI();
@@ -260,56 +335,82 @@
         function gainExp(amount) {
             let d = playerGame.digimon;
             d.exp += amount;
-            logMessage(`⭐ Ganhaste ${amount} de EXP.`);
+            logMessage(`⭐ +${amount} EXP.`);
 
             if (d.exp >= d.nextLevelExp) {
                 d.exp -= d.nextLevelExp;
                 d.level++;
-                d.maxHp += 30;
+                d.maxHp += 35;
                 d.hp = d.maxHp;
-                d.atk += 8;
+                d.atk += 10;
                 logMessage(`🎉 Subiste para o Nível ${d.level}!`);
                 checkDigivolution();
             }
         }
 
+        // Funcionalidade 3: Evoluções Ramificadas Expandidas (Champion, Ultimate e Mega)
         function checkDigivolution() {
             let d = playerGame.digimon;
+            // Rookie para Champion (Nv. 8)
             if (d.stage === "Rookie" && d.level >= 8) {
                 d.stage = "Champion";
-                if (d.atk >= 40) {
+                if (d.atk >= 45) {
                     d.name = "Greymon";
-                    d.atk += 20;
+                    d.element = "Fogo";
+                    d.atk += 25;
                     d.sprite = "https://wikimon.net/images/thumb/d/d1/Greymon.jpg/250px-Greymon.jpg";
-                    logMessage(`🔥 EVOLUÇÃO! O teu Digimon tornou-se um poderoso Greymon!`);
                 } else {
                     d.name = "Meramon";
-                    d.maxHp += 50;
+                    d.element = "Fogo";
+                    d.maxHp += 60;
                     d.sprite = "https://wikimon.net/images/thumb/5/5a/Meramon.jpg/250px-Meramon.jpg";
-                    logMessage(`🔥 EVOLUÇÃO! O teu Digimon tornou-se um ardente Meramon!`);
                 }
                 d.hp = d.maxHp;
+                logMessage(`🔥 DIGIEVOLUÇÃO CHAMPION: ${d.name}!`);
+                triggerVibration([100, 100, 100]);
+            }
+            // Champion para Ultimate (Nv. 15)
+            else if (d.stage === "Champion" && d.level >= 15) {
+                d.stage = "Ultimate";
+                d.name = "MetalGreymon";
+                d.atk += 40;
+                d.maxHp += 120;
+                d.hp = d.maxHp;
+                d.sprite = "https://wikimon.net/images/thumb/8/8c/MetalGreymon.jpg/250px-MetalGreymon.jpg";
+                logMessage(`⚡ DIGIEVOLUÇÃO ULTIMATE: MetalGreymon desbloqueado!`);
+                triggerVibration([150, 150, 150]);
+            }
+            // Ultimate para Mega (Nv. 25)
+            else if (d.stage === "Ultimate" && d.level >= 25) {
+                d.stage = "Mega";
+                d.name = "WarGreymon";
+                d.atk += 80;
+                d.maxHp += 300;
+                d.hp = d.maxHp;
+                d.sprite = "https://wikimon.net/images/thumb/0/03/WarGreymon.jpg/250px-WarGreymon.jpg";
+                logMessage(`🌟 FORMA SUPREMA MEGA: WarGreymon alcançado!`);
+                triggerVibration([200, 200, 200]);
             }
         }
 
         function usePotion() {
             if (playerGame.inventory.potions > 0) {
                 playerGame.inventory.potions--;
-                playerGame.digimon.hp = Math.min(playerGame.digimon.maxHp, playerGame.digimon.hp + 60);
-                logMessage(`🧪 Poção usada com sucesso!`);
+                playerGame.digimon.hp = Math.min(playerGame.digimon.maxHp, playerGame.digimon.hp + 70);
+                logMessage(`🧪 Poção usada com sucesso.`);
                 updateUI();
             } else {
-                logMessage(`❌ Não tens poções! Vai à Loja no Central Park.`);
+                logMessage(`❌ Sem poções no inventário.`);
             }
         }
 
         function restAtTerminal() {
             if (gameWorld.currentLocation === "Central Park") {
                 playerGame.digimon.hp = playerGame.digimon.maxHp;
-                logMessage(`💚 Descansaste no Terminal. Vida a 100%!`);
+                logMessage(`💚 Descansaste no Terminal. HP a 100%!`);
                 updateUI();
             } else {
-                logMessage(`❌ Só podes curar no Central Park!`);
+                logMessage(`❌ Cura gratuita só no Central Park.`);
             }
         }
 

@@ -1,152 +1,322 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Digimon: Crônicas Digitais Ultimate</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digimon Ultimate</title>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; touch-action: manipulation; user-select: none; }
-        .pixel-font { font-family: 'Press Start 2P', monospace; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
+        body { background-color: #0b0f1a; color: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 100vh; padding: 8px; }
+        header { text-align: center; background: #1e293b; width: 100%; padding: 8px; border-radius: 6px; border: 2px solid #3b82f6; font-size: 14px; display: flex; align-items: center; justify-content: space-between; }
+        .digimon-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #fbbf24; }
+        .status-panel { display: flex; justify-content: space-between; width: 100%; background: #1e1b4b; padding: 8px; border-radius: 6px; border: 1px solid #60a5fa; font-size: 12px; }
+        .game-screen { width: 100%; flex-grow: 1; margin: 6px 0; background: #090d16; border: 2px solid #2563eb; border-radius: 6px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; }
+        .location-title { color: #fbbf24; font-weight: bold; font-size: 15px; margin-bottom: 4px; }
+        .log-box { background: #020617; border: 1px solid #1e293b; padding: 8px; height: 110px; overflow-y: auto; font-size: 12px; color: #38bdf8; border-radius: 4px; }
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: 100%; margin-bottom: 4px; }
+        button { background: #2563eb; color: white; border: none; padding: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px; text-transform: uppercase; }
+        button:active { background: #1d4ed8; }
+        .action-buttons { display: flex; gap: 5px; width: 100%; flex-wrap: wrap; justify-content: center; }
+        .action-buttons button { background: #d97706; flex: 1; min-width: 45%; padding: 8px; font-size: 11px; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between items-center p-4 max-w-md mx-auto relative overflow-x-hidden">
+<body>
 
-    <header class="w-full text-center py-2 border-b border-slate-800 mb-2 flex justify-between items-center">
-        <div>
-            <h1 class="pixel-font text-[9px] text-amber-400">DIGIMON ULTIMATE</h1>
-            <p class="text-[9px] text-slate-400 mt-0.5" id="player-status-bar">Parceiro: Agumon | Nv. 1</p>
+    <header>
+        <div style="text-align: left;">
+            <strong style="color: #fbbf24;">DIGIMON ULTIMATE</strong><br>
+            <span style="font-size: 11px;" id="headerInfo">Parceiro: Agumon | Nv. 1</span>
         </div>
-        <div class="flex space-x-1">
-            <button onclick="Game.openDigiDex()" class="text-[9px] bg-cyan-900/40 text-cyan-300 border border-cyan-800 px-2 py-1 rounded cursor-pointer" title="DigiDex">📖</button>
-            <button onclick="Game.openQuests()" class="text-[9px] bg-purple-900/40 text-purple-300 border border-purple-800 px-2 py-1 rounded cursor-pointer" title="Quests">📜</button>
-            <button onclick="Game.openEquipment()" class="text-[9px] bg-amber-900/40 text-amber-300 border border-amber-800 px-2 py-1 rounded cursor-pointer" title="Equipamentos">🛡️</button>
-            <button onclick="Game.resetGameData()" class="text-[9px] bg-rose-900/40 text-rose-300 border border-rose-800 px-2 py-1 rounded cursor-pointer" title="Reset">🔄</button>
-        </div>
+        <img src="https://wikimon.net/images/thumb/7/73/Agumon.jpg/250px-Agumon.jpg" alt="Agumon" class="digimon-avatar" id="digiAvatar">
     </header>
 
-    <main id="app-container" class="w-full flex-1 flex flex-col justify-center items-center">
-        
-        <!-- MENU -->
-        <div id="screen-menu" class="w-full flex flex-col items-center space-y-3">
-            <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full text-center shadow-xl space-y-3">
-                <h2 class="text-base font-bold text-cyan-400">Mundo Digital em Perigo</h2>
-                <button onclick="Game.openPartnerSelection()" class="w-full bg-cyan-600 hover:bg-cyan-500 font-bold py-3 rounded-xl text-xs shadow-lg cursor-pointer">INICIAR JORNADA</button>
-                <button onclick="Game.startDojo()" class="w-full bg-blue-600 hover:bg-blue-500 font-bold py-3 rounded-xl text-xs shadow-lg cursor-pointer">🥋 DOJO DE TREINO</button>
-                <button onclick="Game.startArena()" class="w-full bg-purple-600 hover:bg-purple-500 font-bold py-3 rounded-xl text-xs shadow-lg cursor-pointer">⚔️ MODO ARENA</button>
-            </div>
+    <div class="status-panel" id="statusPanel">
+        <div>
+            <strong id="digiName">Agumon</strong> (<span id="digiStage">Rookie</span>)<br>
+            HP: <span id="digiHp">100</span>/<span id="digiMaxHp">100</span> | ATK: <span id="digiAtk">25</span>
         </div>
-
-        <!-- SELEÇÃO DE PARCEIRO -->
-        <div id="screen-partner" class="w-full hidden flex-col space-y-3">
-            <h3 class="text-xs font-bold text-cyan-400 text-center">Escolha seu Digimon Inicial:</h3>
-            <div id="partner-list-container" class="space-y-2 w-full"></div>
+        <div>
+            EXP: <span id="digiExp">0</span>/<span id="digiNextExp">100</span><br>
+            Bits: <span id="playerBits">600</span> | Poções: <span id="itemPotions">2</span> | Cartas: <span id="cardCount">1</span>
         </div>
+    </div>
 
-        <!-- HISTÓRIA / FASES -->
-        <div id="screen-story" class="w-full hidden flex-col space-y-3">
-            <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl w-full">
-                <span id="chapter-tag" class="text-[9px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded font-bold">Capítulo 1</span>
-                <h3 id="chapter-title" class="text-sm font-bold mt-1 text-amber-300">Ilha File</h3>
-                <p id="chapter-desc" class="text-xs text-slate-300 mt-1">Descrição...</p>
-                <p class="text-[10px] text-cyan-400 mt-2">🌤️ Clima: <span id="weather-name">Calor Extremo</span></p>
-            </div>
-            <div class="bg-slate-900/60 border border-slate-800 p-3 rounded-xl text-center">
-                <p class="text-xs text-slate-400">Inimigo: <span id="enemy-preview-name" class="font-bold text-rose-400">Devimon</span></p>
-            </div>
-            <button onclick="Game.startBattle()" class="w-full bg-emerald-600 hover:bg-emerald-500 font-bold py-3 rounded-xl text-xs shadow-lg cursor-pointer">ENFRENTAR CHEFE</button>
+    <div class="game-screen">
+        <div>
+            <div class="location-title" id="locName">Central Park</div>
+            <p id="locDesc" style="font-size: 12px; color: #94a3b8; margin-bottom: 6px;">Zona segura com Terminal, Loja e Quests.</p>
         </div>
-
-        <!-- DOJO DE TREINO (Minijogo de Reflexo) -->
-        <div id="screen-dojo" class="w-full hidden flex-col space-y-4 text-center">
-            <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full space-y-3">
-                <h3 class="text-sm font-bold text-blue-400">🥋 Dojo Digital - Treino de Foco</h3>
-                <p id="dojo-instruction" class="text-xs text-slate-300">Clica no botão assim que ele acender para ganhar EXP!</p>
-                <button id="dojo-action-btn" onclick="Game.dojoClick()" class="w-full bg-slate-800 hover:bg-slate-700 font-bold py-6 rounded-xl text-sm border border-slate-700 cursor-pointer transition">AGUARDE...</button>
-                <button onclick="Game.init()" class="w-full bg-slate-800/60 hover:bg-slate-800 py-2.5 rounded-xl text-xs font-bold cursor-pointer">Voltar ao Menu</button>
-            </div>
+        <div class="log-box" id="gameLog">
+            [Sistema] Bem-vindo ao Digimon Ultimate com sprites oficiais! Escolhe um caminho para começar.
         </div>
+    </div>
 
-        <!-- LOJA DE SUPRIMENTOS -->
-        <div id="screen-shop" class="w-full hidden flex-col space-y-4 text-center">
-            <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full space-y-3">
-                <h3 class="text-sm font-bold text-amber-400">🛒 Loja Digital</h3>
-                <p class="text-xs text-slate-300">Bits disponíveis: <span id="shop-gold" class="font-bold text-amber-300">0</span></p>
-                <button onclick="Game.buyItem('potion')" class="w-full bg-purple-700 hover:bg-purple-600 font-bold py-2.5 rounded-xl text-xs cursor-pointer">Comprar Poção (+1) - 30 Bits</button>
-                <button onclick="Game.leaveShop()" class="w-full bg-emerald-600 hover:bg-emerald-500 font-bold py-3 rounded-xl text-xs cursor-pointer">Continuar Viagem ➔</button>
-            </div>
+    <div style="width: 100%;">
+        <div class="controls" id="navigationControls"></div>
+        <div class="action-buttons">
+            <button onclick="usePotion()">Usar Poção</button>
+            <button onclick="openShop()" style="background: #059669;">Loja</button>
+            <button onclick="openQuestBoard()" style="background: #7c3aed;">Quests</button>
+            <button onclick="useCard()" style="background: #db2777;">Usar Carta</button>
+            <button onclick="restAtTerminal()" style="background: #10b981; min-width: 100%;">Curar no Terminal</button>
         </div>
+    </div>
 
-        <!-- EQUIPAMENTOS -->
-        <div id="screen-equipment" class="w-full hidden flex-col space-y-3">
-            <h3 class="text-xs font-bold text-amber-400 text-center">🛡️ Loja de Equipamentos Passivos</h3>
-            <div id="equipment-list-container" class="space-y-2 w-full"></div>
-            <button onclick="Game.init()" class="w-full bg-slate-800 hover:bg-slate-700 py-3 rounded-xl text-xs font-bold cursor-pointer">Voltar</button>
-        </div>
+    <script>
+        const playerGame = {
+            bits: 600,
+            inventory: { potions: 2, cards: 1 },
+            quest: { active: null, target: 0, progress: 0, reward: 250, description: "Nenhuma missão ativa." },
+            digimon: {
+                name: "Agumon",
+                stage: "Rookie",
+                level: 5,
+                hp: 100,
+                maxHp: 100,
+                atk: 25,
+                exp: 0,
+                nextLevelExp: 100,
+                sprite: "https://wikimon.net/images/thumb/7/73/Agumon.jpg/250px-Agumon.jpg"
+            }
+        };
 
-        <!-- MISSÕES DIÁRIAS (QUESTS) -->
-        <div id="screen-quests" class="w-full hidden flex-col space-y-3">
-            <h3 class="text-xs font-bold text-purple-400 text-center">📜 Missões Diárias</h3>
-            <div id="quests-list-container" class="space-y-2 w-full"></div>
-            <button onclick="Game.init()" class="w-full bg-slate-800 hover:bg-slate-700 py-3 rounded-xl text-xs font-bold cursor-pointer">Voltar</button>
-        </div>
+        const gameWorld = {
+            currentLocation: "Central Park",
+            locations: {
+                "Central Park": {
+                    name: "Central Park (Cidade Inicial)",
+                    description: "Zona segura com o Terminal de Servidor, Loja e Quests.",
+                    connections: ["South Sector Outskirts", "Digimon Cemetery"],
+                    hasWildBattles: false
+                },
+                "South Sector Outskirts": {
+                    name: "Arredores do Sector Sul",
+                    description: "Planícies verdes com Goburimons e Kunemons selvagens.",
+                    connections: ["Central Park", "Ether Jungle"],
+                    hasWildBattles: true,
+                    wildMonsters: [
+                        { name: "Goburimon", hp: 60, atk: 18, expReward: 40 },
+                        { name: "Kunemon", hp: 50, atk: 15, expReward: 35 }
+                    ],
+                    encounterRate: 0.6
+                },
+                "Ether Jungle": {
+                    name: "Selva Ether",
+                    description: "Floresta densa com Digimons selvagens.",
+                    connections: ["South Sector Outskirts"],
+                    hasWildBattles: true,
+                    wildMonsters: [
+                        { name: "Palmon", hp: 80, atk: 20, expReward: 55 },
+                        { name: "Tentomon", hp: 85, atk: 22, expReward: 60 }
+                    ],
+                    encounterRate: 0.7
+                },
+                "Digimon Cemetery": {
+                    name: "Cemitério de Digimons",
+                    description: "Ruínas antigas com Bakemons corrompidos.",
+                    connections: ["Central Park"],
+                    hasWildBattles: true,
+                    wildMonsters: [
+                        { name: "Bakemon", hp: 110, atk: 28, expReward: 80 }
+                    ],
+                    encounterRate: 0.7
+                }
+            },
 
-        <!-- DIGIDEX -->
-        <div id="screen-digidex" class="w-full hidden flex-col space-y-3">
-            <h3 class="text-xs font-bold text-cyan-400 text-center">📖 Enciclopédia DigiDex</h3>
-            <div id="digidex-list-container" class="space-y-2 w-full max-h-64 overflow-y-auto"></div>
-            <button onclick="Game.init()" class="w-full bg-slate-800 hover:bg-slate-700 py-3 rounded-xl text-xs font-bold cursor-pointer">Voltar</button>
-        </div>
+            travelTo(destinationName) {
+                this.currentLocation = destinationName;
+                const loc = this.locations[destinationName];
+                logMessage(`🗺️ Viajaste para: ${loc.name}`);
+                updateUI();
+                updateNavigation();
 
-        <!-- BATALHA -->
-        <div id="screen-battle" class="w-full hidden flex-col justify-between h-full space-y-2">
-            <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl flex items-center justify-between">
-                <div>
-                    <span id="enemy-name" class="text-xs font-bold text-rose-400">Devimon</span>
-                    <div class="w-32 bg-slate-800 h-2 rounded-full mt-1 overflow-hidden">
-                        <div id="enemy-hp-bar" class="bg-rose-500 h-full w-full transition-all"></div>
-                    </div>
-                </div>
-                <div id="enemy-sprite" class="text-2xl">😈</div>
-            </div>
+                if (loc.hasWildBattles && Math.random() < loc.encounterRate) {
+                    const wild = loc.wildMonsters[Math.floor(Math.random() * loc.wildMonsters.length)];
+                    triggerWildBattle(wild);
+                }
+            }
+        };
 
-            <div id="battle-log" class="bg-slate-900/80 border border-slate-800 p-2 rounded-xl h-20 overflow-y-auto text-[11px] text-slate-300 font-mono"></div>
+        function logMessage(msg) {
+            const logBox = document.getElementById("gameLog");
+            logBox.innerHTML += `<br>${msg}`;
+            logBox.scrollTop = logBox.scrollHeight;
+        }
 
-            <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl flex items-center justify-between">
-                <div id="player-sprite" class="text-2xl">🦖</div>
-                <div class="text-right">
-                    <span id="battle-player-name" class="text-xs font-bold text-cyan-400">Agumon</span>
-                    <p id="player-hp-text" class="text-[9px] text-slate-400">HP: 100/100</p>
-                    <p id="player-exp-text" class="text-[9px] text-amber-400">EXP: 0</p>
-                    <div class="w-32 bg-slate-800 h-2 rounded-full mt-1 ml-auto overflow-hidden">
-                        <div id="player-hp-bar" class="bg-cyan-500 h-full w-full transition-all"></div>
-                    </div>
-                </div>
-            </div>
+        function updateUI() {
+            const d = playerGame.digimon;
+            document.getElementById("digiName").innerText = d.name;
+            document.getElementById("digiStage").innerText = d.stage;
+            document.getElementById("headerInfo").innerText = `Parceiro: ${d.name} | Nv. ${d.level}`;
+            document.getElementById("digiHp").innerText = d.hp;
+            document.getElementById("digiMaxHp").innerText = d.maxHp;
+            document.getElementById("digiAtk").innerText = d.atk;
+            document.getElementById("digiExp").innerText = d.exp;
+            document.getElementById("digiNextExp").innerText = d.nextLevelExp;
+            document.getElementById("playerBits").innerText = playerGame.bits;
+            document.getElementById("itemPotions").innerText = playerGame.inventory.potions;
+            document.getElementById("cardCount").innerText = playerGame.inventory.cards;
+            document.getElementById("digiAvatar").src = d.sprite;
 
-            <div class="grid grid-cols-2 gap-2">
-                <button onclick="Game.playerAttack('basic')" class="bg-slate-800 hover:bg-slate-700 py-2.5 rounded-xl text-xs font-bold border border-slate-700 cursor-pointer">Ataque</button>
-                <button onclick="Game.playerAttack('special')" class="bg-cyan-900/60 hover:bg-cyan-900 py-2.5 rounded-xl text-xs font-bold border border-cyan-800 text-cyan-300 cursor-pointer">Especial</button>
-                <button onclick="Game.usePotion()" class="bg-purple-900/60 hover:bg-purple-900 py-2.5 rounded-xl text-xs font-bold border border-purple-800 text-purple-300 cursor-pointer">🧪 Poção (<span id="potion-count">2</span>)</button>
-                <button onclick="Game.playerEvolve()" id="btn-evolve" class="bg-amber-900/60 hover:bg-amber-900 py-2.5 rounded-xl text-xs font-bold border border-amber-800 text-amber-300 cursor-pointer">Evoluir ⚡</button>
-            </div>
-        </div>
+            const loc = gameWorld.locations[gameWorld.currentLocation];
+            document.getElementById("locName").innerText = loc.name;
+            document.getElementById("locDesc").innerText = loc.description;
+        }
 
-        <!-- VITÓRIA -->
-        <div id="screen-victory" class="w-full hidden flex-col items-center text-center space-y-3">
-            <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full shadow-xl space-y-3">
-                <h2 id="victory-title" class="text-base font-bold text-amber-400">Vitória!</h2>
-                <p id="victory-desc" class="text-xs text-slate-300">Missão concluída com sucesso.</p>
-                <button id="victory-btn" onclick="Game.proceedAfterVictory()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-3 rounded-xl text-xs cursor-pointer">CONTINUAR</button>
-            </div>
-        </div>
+        function updateNavigation() {
+            const controlsDiv = document.getElementById("navigationControls");
+            controlsDiv.innerHTML = "";
+            const loc = gameWorld.locations[gameWorld.currentLocation];
 
-    </main>
+            loc.connections.forEach(dest => {
+                const btn = document.createElement("button");
+                btn.innerText = `Ir: ${dest}`;
+                btn.onclick = () => gameWorld.travelTo(dest);
+                controlsDiv.appendChild(btn);
+            });
+        }
 
-    <footer class="w-full text-center text-[9px] text-slate-500 pt-2 border-t border-slate-900">Digimon Ultimate - 10 Total Features</footer>
+        function openShop() {
+            if (gameWorld.currentLocation !== "Central Park") {
+                logMessage("❌ Só podes aceder à Loja no Central Park!");
+                return;
+            }
+            if (playerGame.bits >= 150) {
+                playerGame.bits -= 150;
+                playerGame.inventory.potions++;
+                logMessage("🛍️ Compraste 1 Poção por 150 Bits!");
+                updateUI();
+            } else {
+                logMessage("❌ Bits insuficientes para comprar poções (Custo: 150 Bits).");
+            }
+        }
 
-    <script src="data.js"></script>
-    <script src="game.js"></script>
+        function useCard() {
+            if (playerGame.inventory.cards > 0) {
+                playerGame.inventory.cards--;
+                playerGame.digimon.atk += 10;
+                logMessage("🎴 Usaste a Carta de Suporte! O Ataque aumentou em +10.");
+                updateUI();
+            } else {
+                logMessage("❌ Não tens cartas de suporte! Ganhas algumas ao derrotar monstros.");
+            }
+        }
+
+        function openQuestBoard() {
+            if (gameWorld.currentLocation !== "Central Park") {
+                logMessage("❌ O balcão de Quests fica no Central Park!");
+                return;
+            }
+            if (!playerGame.quest.active) {
+                playerGame.quest = { active: "Goburimon", target: 2, progress: 0, reward: 250, description: "Derrotar 2 Goburimon." };
+                logMessage(`📜 Nova Quest Aceite: ${playerGame.quest.description}`);
+            } else {
+                logMessage(`📜 Quest Ativa: ${playerGame.quest.description} (${playerGame.quest.progress}/${playerGame.quest.target})`);
+            }
+        }
+
+        function checkQuestProgress(monsterName) {
+            if (playerGame.quest.active === monsterName) {
+                playerGame.quest.progress++;
+                logMessage(`🎯 Progresso da Quest: ${playerGame.quest.progress}/${playerGame.quest.target}`);
+                if (playerGame.quest.progress >= playerGame.quest.target) {
+                    playerGame.bits += playerGame.quest.reward;
+                    logMessage(`🏆 Quest Concluída! Recebeste ${playerGame.quest.reward} Bits!`);
+                    playerGame.quest.active = null;
+                }
+            }
+        }
+
+        function triggerWildBattle(wild) {
+            logMessage(`⚠️ Um ${wild.name} selvagem apareceu!`);
+            let d = playerGame.digimon;
+
+            while (d.hp > 0 && wild.hp > 0) {
+                wild.hp -= d.atk;
+                if (wild.hp <= 0) break;
+                d.hp -= wild.atk;
+            }
+
+            if (d.hp > 0) {
+                logMessage(`🏆 Vitória contra o ${wild.name}!`);
+                playerGame.bits += 50;
+                checkQuestProgress(wild.name);
+                
+                if (Math.random() < 0.4) {
+                    playerGame.inventory.cards++;
+                    logMessage(`🎴 Encontraste uma Digi-Carta rara!`);
+                }
+
+                gainExp(wild.expReward);
+            } else {
+                d.hp = 1;
+                logMessage(`💀 O teu Digimon desmaiou! Recuaste para o Central Park.`);
+                gameWorld.currentLocation = "Central Park";
+            }
+            updateUI();
+            updateNavigation();
+        }
+
+        function gainExp(amount) {
+            let d = playerGame.digimon;
+            d.exp += amount;
+            logMessage(`⭐ Ganhaste ${amount} de EXP.`);
+
+            if (d.exp >= d.nextLevelExp) {
+                d.exp -= d.nextLevelExp;
+                d.level++;
+                d.maxHp += 30;
+                d.hp = d.maxHp;
+                d.atk += 8;
+                logMessage(`🎉 Subiste para o Nível ${d.level}!`);
+                checkDigivolution();
+            }
+        }
+
+        function checkDigivolution() {
+            let d = playerGame.digimon;
+            if (d.stage === "Rookie" && d.level >= 8) {
+                d.stage = "Champion";
+                if (d.atk >= 40) {
+                    d.name = "Greymon";
+                    d.atk += 20;
+                    d.sprite = "https://wikimon.net/images/thumb/d/d1/Greymon.jpg/250px-Greymon.jpg";
+                    logMessage(`🔥 EVOLUÇÃO! O teu Digimon tornou-se um poderoso Greymon!`);
+                } else {
+                    d.name = "Meramon";
+                    d.maxHp += 50;
+                    d.sprite = "https://wikimon.net/images/thumb/5/5a/Meramon.jpg/250px-Meramon.jpg";
+                    logMessage(`🔥 EVOLUÇÃO! O teu Digimon tornou-se um ardente Meramon!`);
+                }
+                d.hp = d.maxHp;
+            }
+        }
+
+        function usePotion() {
+            if (playerGame.inventory.potions > 0) {
+                playerGame.inventory.potions--;
+                playerGame.digimon.hp = Math.min(playerGame.digimon.maxHp, playerGame.digimon.hp + 60);
+                logMessage(`🧪 Poção usada com sucesso!`);
+                updateUI();
+            } else {
+                logMessage(`❌ Não tens poções! Vai à Loja no Central Park.`);
+            }
+        }
+
+        function restAtTerminal() {
+            if (gameWorld.currentLocation === "Central Park") {
+                playerGame.digimon.hp = playerGame.digimon.maxHp;
+                logMessage(`💚 Descansaste no Terminal. Vida a 100%!`);
+                updateUI();
+            } else {
+                logMessage(`❌ Só podes curar no Central Park!`);
+            }
+        }
+
+        window.onload = () => {
+            updateUI();
+            updateNavigation();
+        };
+    </script>
 </body>
 </html>
